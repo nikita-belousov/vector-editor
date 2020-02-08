@@ -1,5 +1,5 @@
-import { Events } from "./types";
-import { EventEmitters, EventHandlers } from "./event-channel/types";
+import { Events } from "../types";
+import { EventEmitters, EventHandlers } from "../event-channel/types";
 
 export abstract class Entity {
   public abstract displayName: string;

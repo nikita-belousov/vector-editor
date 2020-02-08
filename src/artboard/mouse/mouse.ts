@@ -47,7 +47,7 @@ export class Mouse extends Entity {
     return this.state;
   }
 
-  private handleMouseDown(e: MouseEvent) {
+  private handleMouseDown = (e: MouseEvent) => {
     this.state.coords = this.getRelativeCoords(e);
     this.updateMouseButton(e);
 
@@ -56,9 +56,9 @@ export class Mouse extends Entity {
     if (emitter) {
       emitter(state);
     }
-  }
+  };
 
-  private handleMouseUp(e: MouseEvent) {
+  private handleMouseUp = (e: MouseEvent) => {
     this.state.coords = this.getRelativeCoords(e);
     this.state.button = null;
 
@@ -67,9 +67,9 @@ export class Mouse extends Entity {
     if (emitter) {
       emitter(state);
     }
-  }
+  };
 
-  private handleMouseMove(e: MouseEvent) {
+  private handleMouseMove = (e: MouseEvent) => {
     this.state.coords = this.getRelativeCoords(e);
 
     const emitter = this.eventEmitters[MouseEvents.MouseMove];
@@ -77,7 +77,7 @@ export class Mouse extends Entity {
     if (emitter) {
       emitter(state);
     }
-  }
+  };
 
   private updateMouseButton(e: MouseEvent) {
     const { state } = this;

@@ -32,7 +32,7 @@ export class PenTool extends Instrument {
     };
   }
 
-  public draw(ctx: CanvasRenderingContext2D): void {
+  public render(ctx: CanvasRenderingContext2D): void {
     const objects = this.getObjects(this.objectTypes);
 
     const paths = objects[ObjectTypes.Path];

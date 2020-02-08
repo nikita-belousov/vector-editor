@@ -1,24 +1,13 @@
-import {
-  ObjectId,
-  IObject,
-  ObjectTypes,
-  Events,
-  IKeyboardState
-} from "./types";
+import { Events, IKeyboardState } from "./types";
 import { Entity } from "./entity";
 import { PenTool } from "./pentool";
 import { Mouse } from "./mouse";
 import { ObjectsManager } from "./objects-manager";
 import { Instrument } from "./instrument";
-import { Instruments } from "./instrument/types";
+import { Instruments } from "./instruments-panel/types";
 import { Cursor } from "./cursor";
 import { EventChannel } from "./event-channel";
 import { EventEmitters } from "./event-channel/types";
-
-interface IObjects {
-  byId: { [key in ObjectId]: IObject };
-  idsByType: { [key in ObjectTypes]?: ObjectId[] };
-}
 
 export class Root {
   private canvas!: HTMLCanvasElement;
@@ -80,13 +69,14 @@ export class Root {
   }
 
   private initObjectsManager() {
-    this.objectsManager = new ObjectsManager();
+    this.objectsManager = new ObjectsManager(this.canvas);
   }
 
   private initInstruments() {
     const { instruments, objectsManager } = this;
 
     const penTool = (instruments[Instruments.PenTool] = new PenTool({
+      instrument: Instruments.PenTool,
       getObjects: objectsManager.getObjectsByTypes,
       onObjectAdd: objectsManager.addNewObject,
       onObjectUpdate: objectsManager.updateObject
@@ -148,7 +138,7 @@ export class Root {
 
     Object.keys(instruments).forEach(instrumentName => {
       const instrument = instruments[instrumentName as Instruments];
-      instrument.draw(this.ctx);
+      instrument.render(this.ctx);
     });
   }
 

@@ -7,10 +7,17 @@ import {
   ObjectsByType,
   ObjectsIdsByType
 } from "./types";
+import { IObjectRect } from "../object/types";
 
 export class ObjectsManager {
+  private canvas!: HTMLCanvasElement;
   private byId: ObjectsById = {};
   private idsByType: ObjectsIdsByType = {};
+  private updatedIds: ObjectId[] = [];
+
+  constructor(canvas: HTMLCanvasElement) {
+    this.canvas = canvas;
+  }
 
   public getObjectsByTypes(types: ObjectTypes[]): Readonly<ObjectsByType> {
     return types.reduce<ObjectsByType>((acc, type) => {
@@ -44,5 +51,15 @@ export class ObjectsManager {
     } else {
       object.data = data;
     }
+
+    this.updatedIds.push(id);
+  }
+
+  public getUpdatedIds(): Readonly<ObjectId[]> {
+    return this.updatedIds;
+  }
+
+  public getDirtyRect(): Readonly<IObjectRect> {
+    const rect = {};
   }
 }

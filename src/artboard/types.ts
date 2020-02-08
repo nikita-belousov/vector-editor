@@ -1,4 +1,6 @@
 import { MouseEvents } from "./mouse/types";
+import { InstrumentsEvents } from "./instruments-panel/types";
+import { KeyboardEvents } from "./keyboard/types";
 
 export type ObjectId = string;
 export type PointId = string;
@@ -18,6 +20,13 @@ export interface IObject<T = any> {
 export interface ICoords {
   x: number;
   y: number;
+}
+
+export interface IRect {
+  top: number;
+  left: number;
+  bottom: number;
+  right: number;
 }
 
 export interface IPoint extends ICoords {}
@@ -70,7 +79,7 @@ export enum PathMode {
   edit = "edit"
 }
 
-export type Events = MouseEvents;
+export type Events = MouseEvents | InstrumentsEvents | KeyboardEvents;
 
 export interface IMousePayload {
   mouseX: number;
