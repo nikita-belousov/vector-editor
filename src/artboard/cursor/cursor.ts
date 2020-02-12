@@ -1,20 +1,30 @@
-import { RenderableEntity } from "../renderable-entity";
-import { ListeningEvents } from "../decorators";
-import { MouseEvents } from "../mouse/types";
+import { Rectangle } from "../rectangle";
+import { ArtboardObject } from "../object";
+import { ICoords } from "../types";
+import { ObjectTypes } from "../object/types";
+import { cursorStyles } from "./styles";
 
-@ListeningEvents([MouseEvents.MouseMove])
-export class Cursor extends RenderableEntity {
-  public displayName = "Cursor";
-
+export class Cursor extends ArtboardObject {
   constructor() {
-    super();
-
-    this.eventHandlers = {
-      [MouseEvents.MouseMove]: mouseState => {}
-    };
+    super(ObjectTypes.Cursor);
   }
 
-  public init() {}
+  public render(ctx: CanvasRenderingContext2D) {
+    ctx.fillStyle = cursorStyles.color;
+    ctx.fillRect(
+      this.coords.x,
+      this.coords.y,
+      cursorStyles.width,
+      cursorStyles.height
+    );
+  }
 
-  public draw(ctx: CanvasRenderingContext2D) {}
+  public getRect() {
+    return new Rectangle({ left: 0, top: 0, bottom: 0, right: 0 });
+  }
+
+  public setCoords({ x, y }: ICoords) {
+    this.coords.x = x;
+    this.coords.y = y;
+  }
 }

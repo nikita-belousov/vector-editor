@@ -1,1 +1,1 @@
-export { Cursor } from "./cursor";
+export { CursorManager } from "./cursor-manager";

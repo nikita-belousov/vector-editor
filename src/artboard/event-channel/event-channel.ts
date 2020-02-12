@@ -1,28 +1,45 @@
-import { Events } from "../types";
-import { EventEmitter, EventHandler } from "./types";
+import { AppStore } from "../../ui/store";
+import { Events } from "../event-channel/types";
+import { EventCallback } from "./types";
+import { reduxMappings } from "./redux-mappings";
 
 export class EventChannel {
-  private listenersByEvent!: { [key in Events]?: EventHandler[] };
+  private listenersByEvent!: { [key in Events]?: EventCallback[] };
 
   constructor() {
     this.listenersByEvent = {};
   }
 
-  public getEmitter(eventType: Events): EventEmitter {
+  public getEmitter(eventType: Events): EventCallback {
     const self = this;
     return function(payload) {
       self.emit(eventType, payload);
     };
   }
 
-  public registerListener(eventName: Events, handler: EventHandler) {
+  public registerHandler(eventName: Events, handler: EventCallback) {
     const { listenersByEvent: listeners } = this;
     (listeners[eventName] || (listeners[eventName] = [])).push(handler);
   }
 
-  private emit(eventType: Events, payload: any) {
+  public patchStore(store: AppStore): AppStore {
+    const self = this;
+    const next = store.dispatch;
+
+    store.dispatch = action => {
+      const event = reduxMappings.get(action.type);
+      if (event !== undefined) {
+        self.emit(event, action.payload);
+      }
+      return next(action);
+    };
+
+    return store;
+  }
+
+  private emit(event: Events, payload?: any) {
     const { listenersByEvent } = this;
-    const listeners = listenersByEvent[eventType];
+    const listeners = listenersByEvent[event];
 
     if (listeners !== undefined) {
       listeners.forEach(handler => {

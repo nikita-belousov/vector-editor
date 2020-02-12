@@ -1,1 +1,1 @@
-export { Object } from "./object";
+export { ArtboardObject } from "./object";

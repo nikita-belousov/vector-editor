@@ -5,7 +5,7 @@ export enum Instruments {
 }
 
 export enum InstrumentsEvents {
-  ChangeInstrument = "ChangeInstrument"
+  SetInstrument = "SetInstrument"
 }
 
 export type InstrumentsEventPayload = Instruments;

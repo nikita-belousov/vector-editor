@@ -1,16 +1,8 @@
-export type ObjectId = string;
+import { ArtboardObject } from "../object";
+import { ObjectId, ObjectTypes } from "../object/types";
 
-export enum ObjectTypes {
-  Path = "Path"
-}
+export type ObjectsById = { [key in ObjectId]?: ArtboardObject };
 
-export interface IObject<T = any> {
-  type: ObjectTypes;
-  data: T;
-}
-
-export type ObjectsById = { [key in ObjectId]?: IObject };
-
-export type ObjectsByType = { [key in ObjectTypes]?: IObject[] };
+export type ObjectsByType = { [key in ObjectTypes]?: ArtboardObject[] };
 
 export type ObjectsIdsByType = { [key in ObjectTypes]?: ObjectId[] };

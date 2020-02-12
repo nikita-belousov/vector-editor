@@ -4,19 +4,27 @@ import {
   InstrumentsEventPayload
 } from "../instruments-panel/types";
 import { KeyboardEvents, KeyboardEventPayload } from "../keyboard/types";
+import { ArtboardObject } from "../object";
+import { ObjectEvents, ObjectEventsPayload } from "../object/types";
+import { RendererEvents } from "../renderer/types";
+import { AppActionType } from "../../ui/actions";
 
-export type EventEmitter<T extends any = any> = (payload: T) => void;
+export type Events =
+  | MouseEvents
+  | InstrumentsEvents
+  | KeyboardEvents
+  | ObjectEvents
+  | RendererEvents;
 
-export type EventHandler<T extends any = any> = (payload: T) => void;
+export type EventCallback<T extends any = any> = (payload: T) => void;
 
-export type EventEmitters = {
-  [key in MouseEvents]?: EventEmitter<MouseEventPayload>
+export type EventCallbacks = {
+  [key in MouseEvents]?: EventCallback<MouseEventPayload>
 } &
-  { [key in InstrumentsEvents]?: EventEmitter<InstrumentsEventPayload> } &
-  { [key in KeyboardEvents]?: EventEmitter<KeyboardEventPayload> };
+  { [key in InstrumentsEvents]?: EventCallback<InstrumentsEventPayload> } &
+  { [key in KeyboardEvents]?: EventCallback<KeyboardEventPayload> } &
+  { [key in ObjectEvents]?: EventCallback<ObjectEventsPayload> } & {
+    [RendererEvents.RenderObjects]?: EventCallback<ArtboardObject[]>;
+  } & { [RendererEvents.RenderCursor]?: EventCallback<void> };
 
-export type EventHandlers = {
-  [key in MouseEvents]?: EventHandler<MouseEventPayload>
-} &
-  { [key in InstrumentsEvents]?: EventHandler<InstrumentsEventPayload> } &
-  { [key in KeyboardEvents]?: EventEmitter<KeyboardEventPayload> };
+export type ReduxMappings = Map<AppActionType, Events>;

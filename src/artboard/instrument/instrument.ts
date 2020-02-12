@@ -1,38 +1,18 @@
-import {
-  ObjectTypes,
-  IObject,
-  ObjectId,
-  ObjectsByType
-} from "../objects-manager/types";
-import { ListeningEvents } from "../decorators";
 import { InstrumentsEvents, Instruments } from "../instruments-panel/types";
-import { RenderableEntity } from "../renderable-entity";
-import { IInstrumentConstructorParams } from "./types";
+import { Entity } from "../entity";
+import { ArtboardObject } from "../object";
+import { ObjectTypes } from "../object/types";
 
-@ListeningEvents([InstrumentsEvents.ChangeInstrument])
-export abstract class Instrument extends RenderableEntity {
-  public instrument!: Instruments;
+export abstract class Instrument extends Entity {
+  public type!: Instruments;
 
-  protected getObjects!: (types: ObjectTypes[]) => Readonly<ObjectsByType>;
-  protected addNewObject!: (type: ObjectTypes, data: IObject) => void;
-  protected updateObject!: (id: ObjectId, data: IObject) => void;
-
-  constructor({
-    instrument,
-    getObjects,
-    onObjectAdd,
-    onObjectUpdate
-  }: IInstrumentConstructorParams) {
+  constructor(type: Instruments) {
     super();
 
-    this.instrument = instrument;
-    this.getObjects = getObjects;
-    this.addNewObject = onObjectAdd;
-    this.updateObject = onObjectUpdate;
-
+    this.type = type;
     this.eventHandlers = {
-      [InstrumentsEvents.ChangeInstrument]: (instrument: Instruments) => {
-        if (instrument === this.instrument) {
+      [InstrumentsEvents.SetInstrument]: (instrument: Instruments) => {
+        if (instrument === this.type) {
           this.handlePick();
         }
       }
@@ -40,6 +20,8 @@ export abstract class Instrument extends RenderableEntity {
   }
 
   public abstract objectTypes: ObjectTypes[];
+
+  public abstract getObjects(): ArtboardObject[];
 
   public abstract handlePick(): void;
 }

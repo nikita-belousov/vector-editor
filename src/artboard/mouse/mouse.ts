@@ -1,22 +1,18 @@
 import { IMouseCoords, IMouseState, MouseButtons, MouseEvents } from "./types";
-import { EmittingEvents } from "../decorators";
 import { Entity } from "../entity";
 
-interface IMouseContstructorParams {
-  canvas: HTMLCanvasElement;
-}
-
-@EmittingEvents([
-  MouseEvents.MouseDown,
-  MouseEvents.MouseUp,
-  MouseEvents.MouseMove
-])
 export class Mouse extends Entity {
   public displayName = "Mouse";
+  public emittingEventsTypes = [
+    MouseEvents.MouseDown,
+    MouseEvents.MouseUp,
+    MouseEvents.MouseMove
+  ];
+
   private canvas!: HTMLCanvasElement;
   private state!: IMouseState;
 
-  constructor({ canvas }: IMouseContstructorParams) {
+  constructor(canvas: HTMLCanvasElement) {
     super();
 
     this.canvas = canvas;

@@ -1,16 +1,6 @@
 import { Entity } from "../entity";
-import { EmittingEvents } from "../decorators";
 import { KeyboardEvents, Keys, IKeyboardState } from "./types";
 
-interface IKeyboardParams {
-  canvas: HTMLCanvasElement;
-}
-
-@EmittingEvents([
-  KeyboardEvents.KeyDown,
-  KeyboardEvents.KeyUp,
-  KeyboardEvents.KeyPress
-])
 export class Keyboard extends Entity {
   static keyCodes: { [key in number]: Keys } = {
     17: Keys.Ctrl,
@@ -19,10 +9,16 @@ export class Keyboard extends Entity {
   };
 
   public displayName = "Keyboard";
+  public emittingEventsTypes = [
+    KeyboardEvents.KeyDown,
+    KeyboardEvents.KeyUp,
+    KeyboardEvents.KeyPress
+  ];
+
   private canvas!: HTMLCanvasElement;
   private state!: IKeyboardState;
 
-  constructor({ canvas }: IKeyboardParams) {
+  constructor(canvas: HTMLCanvasElement) {
     super();
 
     this.canvas = canvas;

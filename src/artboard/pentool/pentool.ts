@@ -1,15 +1,10 @@
 import { Instrument } from "../instrument";
-import { IObject, IPath, ObjectTypes } from "../types";
 import { PenToolModes, IPenModeState, IBendModeState } from "./types";
 import { MouseEvents, MouseEventPayload } from "../mouse/types";
-import { ListeningEvents } from "../decorators";
-import { IInstrumentConstructorParams } from "../instrument/types";
+import { Instruments } from "../instruments-panel/types";
+import { ObjectTypes } from "../object/types";
+import { ArtboardObject } from "../object";
 
-@ListeningEvents([
-  MouseEvents.MouseDown,
-  MouseEvents.MouseUp,
-  MouseEvents.MouseMove
-])
 export class PenTool extends Instrument {
   static modes = [PenToolModes.Pen, PenToolModes.Bend];
 
@@ -21,31 +16,22 @@ export class PenTool extends Instrument {
     [PenToolModes.Bend]: IBendModeState;
   };
 
-  constructor(params: IInstrumentConstructorParams) {
-    super(params);
+  constructor() {
+    super(Instruments.PenTool);
 
     this.objectTypes = [ObjectTypes.Path];
+
     this.eventHandlers = {
+      ...this.eventHandlers,
       [MouseEvents.MouseDown]: this.handleMouseDown,
       [MouseEvents.MouseUp]: this.handleMouseUp,
       [MouseEvents.MouseMove]: this.handleMouseMove
     };
   }
 
-  public render(ctx: CanvasRenderingContext2D): void {
-    const objects = this.getObjects(this.objectTypes);
-
-    const paths = objects[ObjectTypes.Path];
-    if (paths && paths.length > 0) {
-      this.drawPaths(paths as IObject<IPath>[]);
-    }
-  }
-
-  private initModesState() {
-    this.stateByMode = {
-      [PenToolModes.Pen]: {},
-      [PenToolModes.Bend]: {}
-    };
+  // TODO: implement
+  public getObjects(): ArtboardObject[] {
+    return [];
   }
 
   public handlePick() {
@@ -73,6 +59,13 @@ export class PenTool extends Instrument {
 
   protected handleMouseMove(mouseState: MouseEventPayload) {}
 
+  private initModesState() {
+    this.stateByMode = {
+      [PenToolModes.Pen]: {},
+      [PenToolModes.Bend]: {}
+    };
+  }
+
   private setMode(mode: PenToolModes) {
     if (!PenTool.modes.includes(mode)) {
       throw new Error(
@@ -90,11 +83,5 @@ export class PenTool extends Instrument {
 
   private handleMouseDownBendMode(mouseState: MouseEventPayload) {
     const bendModeState = this.stateByMode[PenToolModes.Bend];
-  }
-
-  private drawPaths(paths: IObject<IPath>[]) {
-    paths.forEach(path => {
-      // TODO: implement
-    });
   }
 }

@@ -1,22 +1,26 @@
-import uniqueId from "lodash/uniqueId";
+import { Entity } from "../entity";
+import { ArtboardObject } from "../object";
 import {
-  ObjectTypes,
+  ObjectEvents,
+  ObjectEventsPayload,
   ObjectId,
-  IObject,
-  ObjectsById,
-  ObjectsByType,
-  ObjectsIdsByType
-} from "./types";
-import { IObjectRect } from "../object/types";
+  ObjectTypes
+} from "../object/types";
+import { ObjectsById, ObjectsIdsByType, ObjectsByType } from "./types";
+import { RendererEvents } from "../renderer/types";
 
-export class ObjectsManager {
-  private canvas!: HTMLCanvasElement;
+export class ObjectsManager extends Entity {
+  public displayName = "Object Manager";
+  public emittingEventsTypes = [RendererEvents.RenderObjects];
+
   private byId: ObjectsById = {};
   private idsByType: ObjectsIdsByType = {};
-  private updatedIds: ObjectId[] = [];
 
-  constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
+  constructor() {
+    super();
+    this.eventHandlers = {
+      [ObjectEvents.CreateObject]: this.registerNewObject
+    };
   }
 
   public getObjectsByTypes(types: ObjectTypes[]): Readonly<ObjectsByType> {
@@ -30,36 +34,31 @@ export class ObjectsManager {
           .map(id => this.byId[id])
           .filter(obj => obj !== undefined);
 
-        acc[type] = objs as IObject[];
+        acc[type] = objs as ArtboardObject[];
         return acc;
       }
     }, {});
   }
 
-  public addNewObject(type: ObjectTypes, data: IObject): ObjectId {
-    const objectId = uniqueId("object__") as ObjectId;
-
-    this.byId[objectId] = { type, data };
-    return objectId;
+  public registerNewObject({ type, object }: ObjectEventsPayload) {
+    const id = object.getId();
+    this.byId[id] = object;
+    this.idsByType[type].push(id);
   }
 
-  public updateObject(id: ObjectId, data: IObject) {
-    const object = this.byId[id];
+  public updateObject(objectId: ObjectId, object: Object) {
+    const { byId } = this;
+    const updatedObject = byId[objectId];
 
-    if (object === undefined) {
-      throw new Error(`object with id ${id} doesn't exist`);
-    } else {
-      object.data = data;
-    }
+    const objectIdsToUpdate = Object.keys(byId).reduce<ObjectId[]>(
+      (acc, id) => {
+        const object = byId[id];
+        const overlaps = object.getRect().overlapsWith(updatedObject.getRect());
+        if (overlaps) acc.push(id);
 
-    this.updatedIds.push(id);
-  }
-
-  public getUpdatedIds(): Readonly<ObjectId[]> {
-    return this.updatedIds;
-  }
-
-  public getDirtyRect(): Readonly<IObjectRect> {
-    const rect = {};
+        return acc;
+      },
+      [objectId]
+    );
   }
 }

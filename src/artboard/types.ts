@@ -8,10 +8,6 @@ export type ControlPointId = string;
 export type CurveId = string;
 export type PathId = string;
 
-export enum ObjectTypes {
-  Path = "Path"
-}
-
 export interface IObject<T = any> {
   type: ObjectTypes;
   data: T;
@@ -20,13 +16,6 @@ export interface IObject<T = any> {
 export interface ICoords {
   x: number;
   y: number;
-}
-
-export interface IRect {
-  top: number;
-  left: number;
-  bottom: number;
-  right: number;
 }
 
 export interface IPoint extends ICoords {}
@@ -78,8 +67,6 @@ export enum PathMode {
   draw = "draw",
   edit = "edit"
 }
-
-export type Events = MouseEvents | InstrumentsEvents | KeyboardEvents;
 
 export interface IMousePayload {
   mouseX: number;
