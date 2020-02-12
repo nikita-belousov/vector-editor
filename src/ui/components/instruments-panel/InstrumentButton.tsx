@@ -1,4 +1,6 @@
 import * as React from "react";
+import styled from "styled-components";
+import { sizes, colors } from "../../styles/variables";
 import { Instruments } from "../../../artboard/instruments-panel/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -18,6 +20,31 @@ const iconsByType: Map<Instruments, IconDefinition> = new Map([
   [Instruments.Select, faMousePointer]
 ]);
 
+interface IButtonProps {
+  active: boolean;
+  onMouseDown: () => void;
+}
+
+const Button = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: ${sizes.topBarHeight};
+  height: ${sizes.topBarHeight};
+  color: ${colors.white};
+  background: ${(props: IButtonProps) =>
+    props.active ? colors.primary : colors.darkGrey};
+
+  :hover {
+    background: ${(props: IButtonProps) =>
+      props.active ? colors.primary : colors.black};
+  }
+
+  :active {
+    background: ${colors.primary};
+  }
+`;
+
 export const InstrumentButton = ({
   instrument,
   active,
@@ -28,14 +55,14 @@ export const InstrumentButton = ({
     throw new Error(`icon for instrument ${instrument} not found`);
   }
 
-  const handleClick = React.useCallback(() => {
+  const handleMouseDown = React.useCallback(() => {
     if (active) return;
     onSelect();
   }, [active, onSelect]);
 
   return (
-    <div onClick={handleClick}>
+    <Button active={active} onMouseDown={handleMouseDown}>
       <FontAwesomeIcon icon={icon} />
-    </div>
+    </Button>
   );
 };

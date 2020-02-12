@@ -5,6 +5,9 @@ import { configureStore } from "./ui/store";
 import { App } from "./ui/components/app";
 import { Artboard } from "./artboard/artboard";
 
+import "normalize.css";
+import "./ui/styles/index.css";
+
 const store = configureStore();
 const artboard = new Artboard();
 artboard.patchStore(store);

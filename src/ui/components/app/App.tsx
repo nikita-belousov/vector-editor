@@ -1,16 +1,19 @@
 import * as React from "react";
+import styled from "styled-components";
 import { Dispatch } from "redux";
 import { connect } from "react-redux";
-import css from "./App.module.css";
+import { sizes } from "../../styles/variables";
 import { Artboard } from "../../../artboard/artboard";
 import { Instruments } from "../../../artboard/instruments-panel/types";
-import { InstrumentsPanel } from "../instruments-panel";
 import {
   InstrumentsPanelAction,
   SetActiveInstrument
 } from "../../model/instruments-panel/actions";
+import { TopBar } from "../top-bar";
+import { Artboard as ArtboardUI } from "../artboard";
 
-const ARTBOARD_SIZE = 500;
+const ARTBOARD_WIDTH = 940;
+const ARTBOARD_HEIGHT = 500;
 
 interface IAppProps {
   artboard: Artboard;
@@ -23,6 +26,17 @@ const mapDispatchToProps = (dispatch: Dispatch<InstrumentsPanelAction>) => ({
   }
 });
 
+const Layout = styled.div``;
+
+const TopBarWrapper = styled.div``;
+
+const ArtboardWrapper = styled.div`
+  display: flex;
+  height: calc(100vh - ${sizes.topBarHeight});
+  justify-content: center;
+  align-items: center;
+`;
+
 class Component extends React.Component<IAppProps> {
   componentDidMount() {
     const { artboard, setActiveInstrument } = this.props;
@@ -33,28 +47,14 @@ class Component extends React.Component<IAppProps> {
 
   render() {
     return (
-      <div className={css.layout}>
-        <div className={css.instrumentsPanel}>
-          <InstrumentsPanel />
-        </div>
-        <div
-          className={css.artboard}
-          style={{ width: `${ARTBOARD_SIZE}px`, height: `${ARTBOARD_SIZE}px` }}
-        >
-          <canvas
-            id="cursor"
-            className={css.cavas}
-            width={ARTBOARD_SIZE}
-            height={ARTBOARD_SIZE}
-          />
-          <canvas
-            id="artboard"
-            className={css.cavas}
-            width={ARTBOARD_SIZE}
-            height={ARTBOARD_SIZE}
-          />
-        </div>
-      </div>
+      <Layout>
+        <TopBarWrapper>
+          <TopBar />
+        </TopBarWrapper>
+        <ArtboardWrapper>
+          <ArtboardUI width={ARTBOARD_WIDTH} height={ARTBOARD_HEIGHT} />
+        </ArtboardWrapper>
+      </Layout>
     );
   }
 }

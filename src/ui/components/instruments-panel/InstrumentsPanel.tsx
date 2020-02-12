@@ -1,4 +1,5 @@
 import * as React from "react";
+import styled from "styled-components";
 import { Dispatch } from "redux";
 import { connect } from "react-redux";
 import { IState } from "../../reducer";
@@ -18,7 +19,7 @@ interface InstrumentsPanelDispatchProps {
 }
 
 const mapStateToProps = (state: IState) => ({
-  acitve: state.instrumentsPanel.active
+  active: state.instrumentsPanel.active
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<InstrumentsPanelAction>) => ({
@@ -26,6 +27,10 @@ const mapDispatchToProps = (dispatch: Dispatch<InstrumentsPanelAction>) => ({
     dispatch(new SetActiveInstrument(instrument));
   }
 });
+
+const Container = styled.div`
+  display: flex;
+`;
 
 class Component extends React.Component<
   InstrumentsPanelStateProps & InstrumentsPanelDispatchProps
@@ -39,7 +44,7 @@ class Component extends React.Component<
     const { active } = this.props;
 
     return (
-      <div>
+      <Container>
         <InstrumentButton
           instrument={Instruments.Select}
           active={active === Instruments.Select}
@@ -50,7 +55,7 @@ class Component extends React.Component<
           active={active === Instruments.PenTool}
           onSelect={() => this.selectInstrument(Instruments.PenTool)}
         />
-      </div>
+      </Container>
     );
   }
 }

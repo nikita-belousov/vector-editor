@@ -94,9 +94,12 @@ export class Mouse extends Entity {
   }
 
   private getRelativeCoords(e: MouseEvent): IMouseCoords {
+    const { canvas } = this;
+    const { left, top } = canvas.getBoundingClientRect();
+
     return {
-      mouseX: e.pageX - this.canvas.offsetLeft,
-      mouseY: e.pageY - this.canvas.offsetTop
+      mouseX: e.pageX - left - canvas.offsetLeft,
+      mouseY: e.pageY - top - canvas.offsetTop
     };
   }
 }

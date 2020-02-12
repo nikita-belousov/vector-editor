@@ -5,13 +5,16 @@ import { ObjectTypes } from "../object/types";
 import { cursorStyles } from "./styles";
 
 export class Cursor extends ArtboardObject {
-  constructor() {
+  public image!: CanvasImageSource;
+
+  constructor(defaultImage: CanvasImageSource) {
     super(ObjectTypes.Cursor);
+    this.image = defaultImage;
   }
 
   public render(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = cursorStyles.color;
-    ctx.fillRect(
+    ctx.drawImage(
+      this.image,
       this.coords.x,
       this.coords.y,
       cursorStyles.width,
@@ -26,5 +29,9 @@ export class Cursor extends ArtboardObject {
   public setCoords({ x, y }: ICoords) {
     this.coords.x = x;
     this.coords.y = y;
+  }
+
+  public setImage(image: CanvasImageSource) {
+    this.image = image;
   }
 }
