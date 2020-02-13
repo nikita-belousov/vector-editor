@@ -37,7 +37,7 @@ const ArtboardWrapper = styled.div`
   align-items: center;
 `;
 
-class Component extends React.Component<IAppProps> {
+class AppComponent extends React.Component<IAppProps> {
   componentDidMount() {
     const { artboard, setActiveInstrument } = this.props;
 
@@ -60,6 +60,6 @@ class Component extends React.Component<IAppProps> {
 }
 
 export const App = connect(
-  () => ({}),
+  null,
   mapDispatchToProps
-)(Component);
+)(AppComponent);

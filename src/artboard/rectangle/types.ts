@@ -5,4 +5,9 @@ export interface IRectangle {
   right: number;
 }
 
-export type RectangleConstructorParams = IRectangle;
+export type RectangleConstructorParams = {
+  top?: number;
+  left?: number;
+  bottom?: number;
+  right?: number;
+};

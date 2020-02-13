@@ -23,9 +23,9 @@ export class PenTool extends Instrument {
 
     this.eventHandlers = {
       ...this.eventHandlers,
-      [MouseEvents.MouseDown]: this.handleMouseDown,
-      [MouseEvents.MouseUp]: this.handleMouseUp,
-      [MouseEvents.MouseMove]: this.handleMouseMove
+      [MouseEvents.MouseDown]: this.handleMouseDown.bind(this),
+      [MouseEvents.MouseUp]: this.handleMouseUp.bind(this),
+      [MouseEvents.MouseMove]: this.handleMouseMove.bind(this)
     };
   }
 
@@ -34,11 +34,13 @@ export class PenTool extends Instrument {
     return [];
   }
 
-  public handlePick() {
+  protected handlePick() {
     this.setMode(PenToolModes.Pen);
   }
 
   protected handleMouseDown(mouseState: MouseEventPayload) {
+    if (!this.active) return;
+
     switch (this.mode) {
       case PenToolModes.Pen:
         this.handleMouseDownPenMode(mouseState);
@@ -55,9 +57,13 @@ export class PenTool extends Instrument {
     }
   }
 
-  protected handleMouseUp(mouseState: MouseEventPayload) {}
+  protected handleMouseUp(mouseState: MouseEventPayload) {
+    if (!this.active) return;
+  }
 
-  protected handleMouseMove(mouseState: MouseEventPayload) {}
+  protected handleMouseMove(mouseState: MouseEventPayload) {
+    if (!this.active) return;
+  }
 
   private initModesState() {
     this.stateByMode = {

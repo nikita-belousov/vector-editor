@@ -25,7 +25,12 @@ export class Rectangle {
     }, selectionRect);
   }
 
-  constructor({ left, top, bottom, right }: RectangleConstructorParams) {
+  constructor({
+    left = 0,
+    top = 0,
+    bottom = 0,
+    right = 0
+  }: RectangleConstructorParams = {}) {
     if (left > right) {
       throw new Error(
         "invalid set of coords, left can't be greater then right"
@@ -44,8 +49,8 @@ export class Rectangle {
 
   public getCoords(): IRectangle {
     return {
-      left: this.top,
-      top: this.left,
+      left: this.left,
+      top: this.top,
       bottom: this.bottom,
       right: this.right
     };
@@ -73,6 +78,13 @@ export class Rectangle {
 
   public setRight(value: number) {
     this.right = value;
+  }
+
+  public reset() {
+    this.top = 0;
+    this.left = 0;
+    this.bottom = 0;
+    this.right = 0;
   }
 
   public moveTo(coords: ICoords) {

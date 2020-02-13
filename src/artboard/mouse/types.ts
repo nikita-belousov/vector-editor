@@ -1,7 +1,8 @@
 export enum MouseEvents {
   MouseDown = "MouseDown",
   MouseUp = "MouseUp",
-  MouseMove = "MouseMove"
+  MouseMove = "MouseMove",
+  MouseLeave = "MouseLeave"
 }
 
 export enum MouseButtons {

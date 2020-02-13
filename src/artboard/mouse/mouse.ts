@@ -31,12 +31,14 @@ export class Mouse extends Entity {
     this.canvas.addEventListener("mousedown", this.handleMouseDown);
     this.canvas.addEventListener("mouseup", this.handleMouseUp);
     this.canvas.addEventListener("mousemove", this.handleMouseMove);
+    this.canvas.addEventListener("mouseleave", this.handleMouseLeave);
   }
 
   public destroy() {
     this.canvas.removeEventListener("mousedown", this.handleMouseDown);
     this.canvas.removeEventListener("mouseup", this.handleMouseUp);
     this.canvas.removeEventListener("mousemove", this.handleMouseMove);
+    this.canvas.removeEventListener("mouseleave", this.handleMouseLeave);
   }
 
   public getMouseState(): Readonly<IMouseState> {
@@ -56,7 +58,6 @@ export class Mouse extends Entity {
 
   private handleMouseUp = (e: MouseEvent) => {
     this.state.coords = this.getRelativeCoords(e);
-    this.state.button = null;
 
     const emitter = this.eventEmitters[MouseEvents.MouseUp];
     const state = this.getMouseState();
@@ -69,6 +70,17 @@ export class Mouse extends Entity {
     this.state.coords = this.getRelativeCoords(e);
 
     const emitter = this.eventEmitters[MouseEvents.MouseMove];
+    const state = this.getMouseState();
+    if (emitter) {
+      emitter(state);
+    }
+  };
+
+  private handleMouseLeave = (e: MouseEvent) => {
+    this.state.coords = this.getRelativeCoords(e);
+    console.log("leave");
+
+    const emitter = this.eventEmitters[MouseEvents.MouseLeave];
     const state = this.getMouseState();
     if (emitter) {
       emitter(state);

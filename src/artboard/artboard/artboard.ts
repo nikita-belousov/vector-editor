@@ -1,22 +1,25 @@
 import isEmpty from "lodash/isEmpty";
-import { AppStore } from "../ui/store";
-import { Entity } from "./entity";
-import { PenTool } from "./pentool";
-import { Mouse } from "./mouse";
-import { Keyboard } from "./keyboard";
-import { Renderer } from "./renderer";
-import { ObjectsManager } from "./objects-manager";
-import { Instruments } from "./instruments-panel/types";
-import { InstrumentsPanel } from "./instruments-panel";
-import { CursorManager } from "./cursor";
-import { EventChannel } from "./event-channel";
-import { Events, EventCallbacks } from "./event-channel/types";
-import { Instrument } from "./instrument";
-import { ArtboardObject } from "./object";
+import { AppStore } from "../../ui/store";
+import { Entity } from "../entity";
+import { Select } from "../select";
+import { PenTool } from "../pentool";
+import { Mouse } from "../mouse";
+import { Keyboard } from "../keyboard";
+import { Renderer } from "../renderer";
+import { ObjectsManager } from "../objects-manager";
+import { Instruments } from "../instruments-panel/types";
+import { InstrumentsPanel } from "../instruments-panel";
+import { CursorManager } from "../cursor";
+import { EventChannel } from "../event-channel";
+import { Events, EventCallbacks } from "../event-channel/types";
+import { Instrument } from "../instrument";
+import { ArtboardObject } from "../object";
 
 export class Artboard {
   private cursorCanvas!: HTMLCanvasElement;
   private cursorCtx!: CanvasRenderingContext2D;
+  private selectionCanvas!: HTMLCanvasElement;
+  private selectionCtx!: CanvasRenderingContext2D;
   private artboardCanvas!: HTMLCanvasElement;
   private artboardCtx!: CanvasRenderingContext2D;
 
@@ -35,6 +38,8 @@ export class Artboard {
   }
 
   public init() {
+    const { instruments } = this;
+
     this.initContexts();
 
     this.mouse = new Mouse(this.cursorCanvas);
@@ -42,17 +47,24 @@ export class Artboard {
     this.instrumentsPanel = new InstrumentsPanel();
     this.cursorManager = new CursorManager();
     this.objectsManager = new ObjectsManager();
-    this.instruments.set(Instruments.PenTool, new PenTool());
+
+    const select = new Select();
+    const pentool = new PenTool();
+
+    instruments.set(Instruments.Select, select);
+    instruments.set(Instruments.PenTool, pentool);
 
     this.renderer = new Renderer({
       screenWidth: this.artboardCanvas.width,
       screenHeight: this.artboardCanvas.height,
       cursorCtx: this.cursorCtx,
+      selectionCtx: this.selectionCtx,
       artboardCtx: this.artboardCtx,
       cursor: this.cursorManager.getCursor(),
-      objects: Object.keys(this.instruments).reduce<ArtboardObject[]>(
+      mouseSelection: select.getMouseSelection(),
+      objects: Object.keys(instruments).reduce<ArtboardObject[]>(
         (acc, type) => {
-          const instrument = this.instruments.get(type as Instruments);
+          const instrument = instruments.get(type as Instruments);
           acc.concat((instrument as Instrument).getObjects());
           return acc;
         },
@@ -67,7 +79,8 @@ export class Artboard {
       this.instrumentsPanel,
       this.cursorManager,
       this.objectsManager,
-      this.instruments.get(Instruments.PenTool)!
+      select,
+      pentool
     ];
 
     this.initEvents();
@@ -81,6 +94,9 @@ export class Artboard {
     const artboardCanvas = window.document.getElementById(
       "artboard"
     ) as HTMLCanvasElement;
+    const selectionCanvas = window.document.getElementById(
+      "selection"
+    ) as HTMLCanvasElement;
     const cursorCanvas = window.document.getElementById(
       "cursor"
     ) as HTMLCanvasElement;
@@ -88,15 +104,19 @@ export class Artboard {
     const artboardCtx = artboardCanvas.getContext(
       "2d"
     ) as CanvasRenderingContext2D;
-    const cursorContext = cursorCanvas.getContext(
+    const selectionCtx = artboardCanvas.getContext(
       "2d"
     ) as CanvasRenderingContext2D;
+    const cursorCtx = cursorCanvas.getContext("2d") as CanvasRenderingContext2D;
 
     this.artboardCanvas = artboardCanvas;
     this.cursorCanvas = cursorCanvas;
 
+    this.selectionCanvas = selectionCanvas;
+    this.selectionCtx = selectionCtx;
+
     this.artboardCtx = artboardCtx;
-    this.cursorCtx = cursorContext;
+    this.cursorCtx = cursorCtx;
   }
 
   private initEvents() {

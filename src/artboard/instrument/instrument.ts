@@ -5,15 +5,19 @@ import { ObjectTypes } from "../object/types";
 
 export abstract class Instrument extends Entity {
   public type!: Instruments;
+  protected active = false;
 
   constructor(type: Instruments) {
     super();
-
     this.type = type;
+
     this.eventHandlers = {
       [InstrumentsEvents.SetInstrument]: (instrument: Instruments) => {
         if (instrument === this.type) {
+          this.active = true;
           this.handlePick();
+        } else if (this.active) {
+          this.active = false;
         }
       }
     };
@@ -23,5 +27,5 @@ export abstract class Instrument extends Entity {
 
   public abstract getObjects(): ArtboardObject[];
 
-  public abstract handlePick(): void;
+  protected abstract handlePick(): void;
 }

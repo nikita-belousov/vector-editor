@@ -8,13 +8,15 @@ import { ArtboardObject } from "../object";
 import { ObjectEvents, ObjectEventsPayload } from "../object/types";
 import { RendererEvents } from "../renderer/types";
 import { AppActionType } from "../../ui/actions";
+import { ArtboardEvents } from "../artboard/types";
 
 export type Events =
   | MouseEvents
   | InstrumentsEvents
   | KeyboardEvents
   | ObjectEvents
-  | RendererEvents;
+  | RendererEvents
+  | ArtboardEvents;
 
 export type EventCallback<T extends any = any> = (payload: T) => void;
 
@@ -25,6 +27,10 @@ export type EventCallbacks = {
   { [key in KeyboardEvents]?: EventCallback<KeyboardEventPayload> } &
   { [key in ObjectEvents]?: EventCallback<ObjectEventsPayload> } & {
     [RendererEvents.RenderObjects]?: EventCallback<ArtboardObject[]>;
-  } & { [RendererEvents.RenderCursor]?: EventCallback<void> };
+  } & { [RendererEvents.RenderCursor]?: EventCallback<void> } & {
+    [RendererEvents.ClearCursor]?: EventCallback<void>;
+  } & { [RendererEvents.RenderMouseSelection]?: EventCallback<void> } & {
+    [RendererEvents.ClearMouseSelection]?: EventCallback<void>;
+  } & { [key in ArtboardEvents]?: EventCallback<any> };
 
 export type ReduxMappings = Map<AppActionType, Events>;

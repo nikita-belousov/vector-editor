@@ -32,7 +32,7 @@ const Container = styled.div`
   display: flex;
 `;
 
-class Component extends React.Component<
+class InstrumentsPanelComponent extends React.Component<
   InstrumentsPanelStateProps & InstrumentsPanelDispatchProps
 > {
   selectInstrument = (instrument: Instruments) => {
@@ -63,4 +63,4 @@ class Component extends React.Component<
 export const InstrumentsPanel = connect(
   mapStateToProps,
   mapDispatchToProps
-)(Component);
+)(InstrumentsPanelComponent);

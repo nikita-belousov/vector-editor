@@ -8,7 +8,8 @@ export enum ObjectEvents {
 
 export enum ObjectTypes {
   Cursor = "Cursor",
-  Path = "Path"
+  Path = "Path",
+  MouseSelection = "MouseSelection"
 }
 
 export type ObjectEventsPayload = {

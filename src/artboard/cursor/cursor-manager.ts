@@ -2,6 +2,7 @@ import { Entity } from "../entity";
 import { MouseEvents, MouseEventPayload } from "../mouse/types";
 import { Instruments, InstrumentsEvents } from "../instruments-panel/types";
 import { RendererEvents } from "../renderer/types";
+import { ArtboardEvents } from "../artboard/types";
 import { Cursor } from "./cursor";
 
 import selectCursor from "../../assets/images/cursors/select.png";
@@ -14,16 +15,22 @@ export class CursorManager extends Entity {
   ]);
 
   public displayName = "Cursor";
-  public emittingEventsTypes = [RendererEvents.RenderCursor];
+  public emittingEventsTypes = [
+    RendererEvents.RenderCursor,
+    RendererEvents.ClearCursor
+  ];
   public cursor: Cursor;
   public cursorImages: Map<Instruments, CanvasImageSource> = new Map();
+  public visible = false;
 
   constructor() {
     super();
 
     this.eventHandlers = {
       [MouseEvents.MouseMove]: this.handleMouseMove.bind(this),
-      [InstrumentsEvents.SetInstrument]: this.handleInstrumentChange.bind(this)
+      [InstrumentsEvents.SetInstrument]: this.handleInstrumentChange.bind(this),
+      [ArtboardEvents.EnterArtboard]: this.handleEnterArtboard.bind(this),
+      [ArtboardEvents.LeaveArtboard]: this.handleLeaveArtboard.bind(this)
     };
 
     this.cursor = new Cursor(selectCursor);
@@ -34,6 +41,8 @@ export class CursorManager extends Entity {
   }
 
   private handleMouseMove(coords: MouseEventPayload) {
+    if (!this.visible) return;
+
     const {
       coords: { mouseX, mouseY }
     } = coords;
@@ -53,6 +62,15 @@ export class CursorManager extends Entity {
       if (image === undefined) return;
       this.cursor.setImage(image);
     });
+  }
+
+  private handleEnterArtboard() {
+    this.visible = true;
+  }
+
+  private handleLeaveArtboard() {
+    this.visible = false;
+    this.emit(RendererEvents.ClearCursor);
   }
 
   private loadCursorImage(instrument: Instruments, onLoad: () => void) {
