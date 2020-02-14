@@ -1,4 +1,5 @@
 export enum RendererEvents {
+  RenderBackground = "RenderBackground",
   RenderCursor = "RenderCursor",
   RenderObjects = "RenderObjects",
   ClearCursor = "ClearCursor",

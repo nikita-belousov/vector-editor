@@ -14,8 +14,11 @@ import { EventChannel } from "../event-channel";
 import { Events, EventCallbacks } from "../event-channel/types";
 import { Instrument } from "../instrument";
 import { ArtboardObject } from "../object";
+import { BackgroundManager } from "../background";
 
 export class Artboard {
+  private backgroundCanvas!: HTMLCanvasElement;
+  private backgroundCtx!: CanvasRenderingContext2D;
   private cursorCanvas!: HTMLCanvasElement;
   private cursorCtx!: CanvasRenderingContext2D;
   private selectionCanvas!: HTMLCanvasElement;
@@ -30,6 +33,7 @@ export class Artboard {
   private instrumentsPanel!: InstrumentsPanel;
   private cursorManager!: CursorManager;
   private eventChannel!: EventChannel;
+  private backgroundManager!: BackgroundManager;
   private objectsManager!: ObjectsManager;
   private instruments: Map<Instruments, Instrument> = new Map();
 
@@ -46,6 +50,7 @@ export class Artboard {
     this.keyboard = new Keyboard(this.artboardCanvas);
     this.instrumentsPanel = new InstrumentsPanel();
     this.cursorManager = new CursorManager();
+    this.backgroundManager = new BackgroundManager();
     this.objectsManager = new ObjectsManager();
 
     const select = new Select();
@@ -57,9 +62,11 @@ export class Artboard {
     this.renderer = new Renderer({
       screenWidth: this.artboardCanvas.width,
       screenHeight: this.artboardCanvas.height,
+      backgroundCtx: this.backgroundCtx,
       cursorCtx: this.cursorCtx,
       selectionCtx: this.selectionCtx,
       artboardCtx: this.artboardCtx,
+      background: this.backgroundManager.getBackground(),
       cursor: this.cursorManager.getCursor(),
       mouseSelection: select.getMouseSelection(),
       objects: Object.keys(instruments).reduce<ArtboardObject[]>(
@@ -78,6 +85,7 @@ export class Artboard {
       this.renderer,
       this.instrumentsPanel,
       this.cursorManager,
+      this.backgroundManager,
       this.objectsManager,
       select,
       pentool
@@ -91,6 +99,9 @@ export class Artboard {
   }
 
   private initContexts() {
+    const backgroundCanvas = window.document.getElementById(
+      "background"
+    ) as HTMLCanvasElement;
     const artboardCanvas = window.document.getElementById(
       "artboard"
     ) as HTMLCanvasElement;
@@ -101,6 +112,9 @@ export class Artboard {
       "cursor"
     ) as HTMLCanvasElement;
 
+    const backgroundCtx = backgroundCanvas.getContext(
+      "2d"
+    ) as CanvasRenderingContext2D;
     const artboardCtx = artboardCanvas.getContext(
       "2d"
     ) as CanvasRenderingContext2D;
@@ -109,12 +123,13 @@ export class Artboard {
     ) as CanvasRenderingContext2D;
     const cursorCtx = cursorCanvas.getContext("2d") as CanvasRenderingContext2D;
 
+    this.backgroundCanvas = backgroundCanvas;
     this.artboardCanvas = artboardCanvas;
     this.cursorCanvas = cursorCanvas;
-
     this.selectionCanvas = selectionCanvas;
-    this.selectionCtx = selectionCtx;
 
+    this.backgroundCtx = backgroundCtx;
+    this.selectionCtx = selectionCtx;
     this.artboardCtx = artboardCtx;
     this.cursorCtx = cursorCtx;
   }

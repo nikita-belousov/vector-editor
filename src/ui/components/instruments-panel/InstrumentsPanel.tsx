@@ -2,7 +2,7 @@ import * as React from "react";
 import styled from "styled-components";
 import { Dispatch } from "redux";
 import { connect } from "react-redux";
-import { IState } from "../../reducer";
+import { IAppState } from "../../reducer";
 import { Instruments } from "../../../artboard/instruments-panel/types";
 import { InstrumentButton } from "./InstrumentButton";
 import {
@@ -18,7 +18,7 @@ interface InstrumentsPanelDispatchProps {
   setActiveInstrument: (instrument: Instruments) => void;
 }
 
-const mapStateToProps = (state: IState) => ({
+const mapStateToProps = (state: IAppState) => ({
   active: state.instrumentsPanel.active
 });
 

@@ -1,12 +1,16 @@
 import * as React from "react";
 import styled from "styled-components";
 import { Dispatch } from "redux";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   EnterArtboard,
   LeaveArtboard,
   ArtboardAction
 } from "../../model/artboard/actions";
+import {
+  getArtboardWidth,
+  getArtboardHeight
+} from "../../model/artboard/selectors";
 
 interface IArtboardProps {
   width: number;
@@ -22,9 +26,9 @@ interface ICanvasProps {
 
 const ArtboardStyled = styled.div`
   position: relative;
+  z-index: 1;
   width: ${(props: IArtboardProps) => props.width}px;
   height: ${(props: IArtboardProps) => props.height}px;
-  border: 1px solid black;
   cursor: none;
 `;
 
@@ -35,7 +39,9 @@ const Canvas = styled.canvas`
   height: ${(props: ICanvasProps) => props.height}px;
 `;
 
-export const Artboard = ({ width, height }: IArtboardProps) => {
+export const Artboard = () => {
+  const width = useSelector(getArtboardWidth);
+  const height = useSelector(getArtboardHeight);
   const dispatch = useDispatch<Dispatch<ArtboardAction>>();
 
   const enterArtboard = React.useCallback(() => {
@@ -45,6 +51,8 @@ export const Artboard = ({ width, height }: IArtboardProps) => {
   const leaveArtboard = React.useCallback(() => {
     dispatch(new LeaveArtboard());
   }, [dispatch]);
+
+  if (width === null || height === null) return null;
 
   return (
     <ArtboardStyled
@@ -56,6 +64,7 @@ export const Artboard = ({ width, height }: IArtboardProps) => {
       <Canvas id="cursor" zIndex={3} width={width} height={height} />
       <Canvas id="selection" zIndex={2} width={width} height={height} />
       <Canvas id="artboard" zIndex={1} width={width} height={height} />
+      <Canvas id="background" zIndex={0} width={width} height={height} />
     </ArtboardStyled>
   );
 };

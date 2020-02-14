@@ -7,12 +7,12 @@ import {
   Action
 } from "redux";
 import { logger } from "redux-logger";
-import { IState, reducer } from "./reducer";
+import { IAppState, reducer } from "./reducer";
 import { AppActionType } from "./actions";
 
 export type AppMiddleware = Middleware<
   {},
-  IState,
+  IAppState,
   Dispatch<Action<AppActionType>>
 >;
 

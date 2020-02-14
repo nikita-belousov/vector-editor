@@ -6,7 +6,7 @@ import {
 } from "./model/instruments-panel/reducer";
 import { IArtboardState, artboardReducer } from "./model/artboard/reducer";
 
-export interface IState {
+export interface IAppState {
   core: ICoreState;
   instrumentsPanel: IInstrumentsPanelState;
   artboard: IArtboardState;

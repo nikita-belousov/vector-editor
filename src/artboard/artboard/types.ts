@@ -1,4 +1,6 @@
 export enum ArtboardEvents {
   EnterArtboard = "EnterArtboard",
-  LeaveArtboard = "LeaveArtboard"
+  LeaveArtboard = "LeaveArtboard",
+  SetWidth = "SetWidth",
+  SetHeight = "SetHeight"
 }

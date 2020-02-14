@@ -78,7 +78,6 @@ export class Mouse extends Entity {
 
   private handleMouseLeave = (e: MouseEvent) => {
     this.state.coords = this.getRelativeCoords(e);
-    console.log("leave");
 
     const emitter = this.eventEmitters[MouseEvents.MouseLeave];
     const state = this.getMouseState();

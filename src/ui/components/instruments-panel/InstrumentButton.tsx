@@ -29,8 +29,9 @@ const Button = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: ${sizes.topBarHeight};
-  height: ${sizes.topBarHeight};
+  width: ${sizes.topBarHeight}px;
+  height: ${sizes.topBarHeight}px;
+  font-size: 16px;
   color: ${colors.white};
   background: ${(props: IButtonProps) =>
     props.active ? colors.primary : colors.darkGrey};
