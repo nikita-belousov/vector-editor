@@ -40,8 +40,8 @@ const Canvas = styled.canvas`
 `;
 
 export const Artboard = () => {
-  const width = useSelector(getArtboardWidth);
-  const height = useSelector(getArtboardHeight);
+  const width = useSelector(getArtboardWidth) || 0;
+  const height = useSelector(getArtboardHeight) || 0;
   const dispatch = useDispatch<Dispatch<ArtboardAction>>();
 
   const enterArtboard = React.useCallback(() => {
@@ -51,8 +51,6 @@ export const Artboard = () => {
   const leaveArtboard = React.useCallback(() => {
     dispatch(new LeaveArtboard());
   }, [dispatch]);
-
-  if (width === null || height === null) return null;
 
   return (
     <ArtboardStyled

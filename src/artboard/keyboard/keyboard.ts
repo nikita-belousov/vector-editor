@@ -5,7 +5,8 @@ export class Keyboard extends Entity {
   static keyCodes: { [key in number]: Keys } = {
     17: Keys.Ctrl,
     18: Keys.Alt,
-    32: Keys.Space
+    32: Keys.Space,
+    27: Keys.Esc
   };
 
   public displayName = "Keyboard";
@@ -28,53 +29,54 @@ export class Keyboard extends Entity {
 
   private initState() {
     this.state = {
+      lastPressed: null,
       [Keys.Alt]: false,
       [Keys.Ctrl]: false,
-      [Keys.Space]: false
+      [Keys.Space]: false,
+      [Keys.Esc]: false
     };
   }
 
   private initEvents() {
-    this.canvas.addEventListener("keydown", this.handleKeyDown);
-    this.canvas.addEventListener("keyup", this.handleKeyUp);
-    this.canvas.addEventListener("keypress", this.handleKeyPress);
+    window.addEventListener("keydown", this.handleKeyDown.bind(this));
+    window.addEventListener("keyup", this.handleKeyUp.bind(this));
+    window.addEventListener("keypress", this.handleKeyPress.bind(this));
   }
 
   private destroy() {
-    this.canvas.removeEventListener("keydown", this.handleKeyDown);
-    this.canvas.removeEventListener("keyup", this.handleKeyUp);
-    this.canvas.removeEventListener("keypress", this.handleKeyPress);
+    window.removeEventListener("keydown", this.handleKeyDown);
+    window.removeEventListener("keyup", this.handleKeyUp);
+    window.removeEventListener("keypress", this.handleKeyPress);
   }
 
-  private handleKeyDown = (e: KeyboardEvent) => {
+  private handleKeyDown(e: KeyboardEvent) {
     const key = Keyboard.keyCodes[e.which];
-    this.updateState(key, true);
+    this.state[key] = true;
 
     const emitter = this.eventEmitters[KeyboardEvents.KeyDown];
     if (emitter) {
       emitter({ key });
     }
-  };
+  }
 
-  private handleKeyUp = (e: KeyboardEvent) => {
+  private handleKeyUp(e: KeyboardEvent) {
     const key = Keyboard.keyCodes[e.which];
-    this.updateState(key, true);
+    this.state[key] = false;
+    this.state.lastPressed = key;
 
     const emitter = this.eventEmitters[KeyboardEvents.KeyUp];
     if (emitter) {
       emitter({ key });
     }
-  };
+  }
 
-  private handleKeyPress = (e: KeyboardEvent) => {
-    const key = Keyboard.keyCodes[e.which];
+  private handleKeyPress(e: KeyboardEvent) {
+    const key = Keyboard.keyCodes[e.keyCode];
+    this.state.lastPressed = key;
+
     const emitter = this.eventEmitters[KeyboardEvents.KeyPress];
     if (emitter) {
       emitter({ key });
     }
-  };
-
-  private updateState(key: Keys, pressed: boolean) {
-    this.state[key] = pressed;
   }
 }

@@ -25,7 +25,8 @@ const actionToPlainObject: AppMiddleware = store => next => action =>
 export const configureStore = () =>
   createStore(
     reducer,
-    composeEnhancers(applyMiddleware(actionToPlainObject, logger))
+    // composeEnhancers(applyMiddleware(actionToPlainObject, logger))
+    composeEnhancers(applyMiddleware(actionToPlainObject))
   );
 
 export type AppStore = ReturnType<typeof configureStore>;

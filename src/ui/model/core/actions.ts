@@ -13,4 +13,6 @@ class SetAge {
 
 export type CoreActionType = typeof SET_NAME | typeof SET_AGE;
 
+export type CoreActionCreator = typeof SetName | typeof SetAge;
+
 export type CoreAction = SetName | SetAge;

@@ -1,66 +1,67 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Dispatch } from "redux";
-import { connect } from "react-redux";
-import { IAppState } from "../../reducer";
-import { Instruments } from "../../../artboard/instruments-panel/types";
-import { InstrumentButton } from "./InstrumentButton";
 import {
-  InstrumentsPanelAction,
-  SetActiveInstrument
-} from "../../model/instruments-panel/actions";
-
-interface InstrumentsPanelStateProps {
-  active: Instruments | null;
-}
-
-interface InstrumentsPanelDispatchProps {
-  setActiveInstrument: (instrument: Instruments) => void;
-}
-
-const mapStateToProps = (state: IAppState) => ({
-  active: state.instrumentsPanel.active
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<InstrumentsPanelAction>) => ({
-  setActiveInstrument: (instrument: Instruments) => {
-    dispatch(new SetActiveInstrument(instrument));
-  }
-});
+  faBars,
+  faSquare,
+  faCircle,
+  faPenNib,
+  faStar,
+  faPencilAlt,
+  faMousePointer
+} from "@fortawesome/free-solid-svg-icons";
+import { Instruments } from "../../../artboard/instruments-panel/types";
+import { PanelButton } from "./PanelButton";
+import { InstrumentButton } from "./InstrumentButton";
+import { InstrumentsGroup } from "./InstrumentsGroup";
+import { DropdownSelectItem } from "../dropdown";
 
 const Container = styled.div`
   display: flex;
 `;
 
-class InstrumentsPanelComponent extends React.Component<
-  InstrumentsPanelStateProps & InstrumentsPanelDispatchProps
-> {
-  selectInstrument = (instrument: Instruments) => {
-    const { setActiveInstrument } = this.props;
-    setActiveInstrument(instrument);
-  };
-
-  render() {
-    const { active } = this.props;
-
-    return (
-      <Container>
-        <InstrumentButton
-          instrument={Instruments.Select}
-          active={active === Instruments.Select}
-          onSelect={() => this.selectInstrument(Instruments.Select)}
+export const InstrumentsPanel: React.FC = () => {
+  return (
+    <Container>
+      <PanelButton title="Settings" icon={faBars} />
+      <InstrumentsGroup>
+        <DropdownSelectItem
+          title="Rectangle"
+          value={Instruments.Rectangle}
+          icon={faSquare}
+          legend="R"
         />
-        <InstrumentButton
-          instrument={Instruments.PenTool}
-          active={active === Instruments.PenTool}
-          onSelect={() => this.selectInstrument(Instruments.PenTool)}
+        <DropdownSelectItem
+          title="Circle"
+          value={Instruments.Ellipse}
+          icon={faCircle}
+          legend="O"
         />
-      </Container>
-    );
-  }
-}
-
-export const InstrumentsPanel = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(InstrumentsPanelComponent);
+        <DropdownSelectItem
+          title="Star"
+          value={Instruments.Star}
+          icon={faStar}
+        />
+      </InstrumentsGroup>
+      <InstrumentButton
+        name="Select"
+        instrument={Instruments.Select}
+        icon={faMousePointer}
+        shortcut="V"
+      />
+      <InstrumentsGroup>
+        <DropdownSelectItem
+          title="Pen"
+          value={Instruments.Pen}
+          icon={faPenNib}
+          legend="P"
+        />
+        <DropdownSelectItem
+          title="Pencil"
+          value={Instruments.Pencil}
+          icon={faPencilAlt}
+          legend="Shift+P"
+        />
+      </InstrumentsGroup>
+    </Container>
+  );
+};

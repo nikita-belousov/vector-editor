@@ -1,69 +1,35 @@
 import * as React from "react";
-import styled from "styled-components";
-import { sizes, colors } from "../../styles/variables";
+import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { useSelector } from "react-redux";
+import { useAction } from "../../utils/hooks";
+import { getActiveInstrument } from "../../model/instruments-panel/selectors";
+import { SetActiveInstrument } from "../../model/instruments-panel/actions";
 import { Instruments } from "../../../artboard/instruments-panel/types";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPenNib,
-  faMousePointer,
-  IconDefinition
-} from "@fortawesome/free-solid-svg-icons";
+import { PanelButton } from "./PanelButton";
 
 interface InstrumentButtonProps {
+  name: string;
   instrument: Instruments;
-  active: boolean;
-  onSelect: () => void;
+  icon: IconDefinition;
+  shortcut: string;
 }
 
-const iconsByType: Map<Instruments, IconDefinition> = new Map([
-  [Instruments.PenTool, faPenNib],
-  [Instruments.Select, faMousePointer]
-]);
-
-interface IButtonProps {
-  active: boolean;
-  onMouseDown: () => void;
-}
-
-const Button = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: ${sizes.topBarHeight}px;
-  height: ${sizes.topBarHeight}px;
-  font-size: 16px;
-  color: ${colors.white};
-  background: ${(props: IButtonProps) =>
-    props.active ? colors.primary : colors.darkGrey};
-
-  :hover {
-    background: ${(props: IButtonProps) =>
-      props.active ? colors.primary : colors.black};
-  }
-
-  :active {
-    background: ${colors.primary};
-  }
-`;
-
-export const InstrumentButton = ({
+export const InstrumentButton: React.FC<InstrumentButtonProps> = ({
+  name,
   instrument,
-  active,
-  onSelect
-}: InstrumentButtonProps) => {
-  const icon = iconsByType.get(instrument);
-  if (icon === undefined) {
-    throw new Error(`icon for instrument ${instrument} not found`);
-  }
-
-  const handleMouseDown = React.useCallback(() => {
-    if (active) return;
-    onSelect();
-  }, [active, onSelect]);
+  icon,
+  shortcut
+}) => {
+  const selectedInstrument = useSelector(getActiveInstrument);
+  const setActiveInstrument = useAction(SetActiveInstrument);
 
   return (
-    <Button active={active} onMouseDown={handleMouseDown}>
-      <FontAwesomeIcon icon={icon} />
-    </Button>
+    <PanelButton
+      title={name}
+      icon={icon}
+      shortcut={shortcut}
+      active={selectedInstrument === instrument}
+      onClick={() => setActiveInstrument(instrument)}
+    />
   );
 };

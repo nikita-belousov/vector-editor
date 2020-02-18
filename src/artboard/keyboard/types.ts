@@ -7,10 +7,13 @@ export enum KeyboardEvents {
 export enum Keys {
   Ctrl = "Ctrl",
   Alt = "Alt",
-  Space = "Space"
+  Space = "Space",
+  Esc = "Esc"
 }
 
-export type IKeyboardState = { [key in Keys]: boolean };
+export type IKeyboardState = { [key in Keys]: boolean } & {
+  lastPressed: Keys | null;
+};
 
 export type KeyboardEventPayload = {
   key: Keys;

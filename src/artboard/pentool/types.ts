@@ -5,27 +5,27 @@ export enum PenToolModes {
   Bend = "Bend"
 }
 
-export type PathPointId = string;
-export type PathControlPointId = string;
-export type PathCurveId = string;
-export type PathPathId = string;
+export type PointId = string;
+export type ControlPointId = string;
+export type CurveId = string;
+export type PathId = string;
 
 export interface IPathPoint extends ICoords {
-  id: PathPointId;
+  id: PointId;
 }
 
 export interface IPathControlPoint extends ICoords {
-  id: PathControlPointId;
+  id: ControlPointId;
 }
 
 export interface IPathCurvePoint {
-  point: PathPointId;
-  controlPoint: PathControlPointId;
+  point: PointId;
+  controlPoint: ControlPointId;
 }
 
 export interface IPathCurve {
-  previous: PathCurveId | null;
-  next: PathCurveId | null;
+  previous: CurveId | null;
+  next: CurveId | null;
   start: IPathCurvePoint;
   end: IPathCurvePoint;
   completed?: boolean;
@@ -33,11 +33,17 @@ export interface IPathCurve {
 }
 
 export interface IPath {
-  curves: PathCurveId[];
-  start: PathCurveId;
-  end: PathCurveId;
+  curves: CurveId[];
+  start: CurveId;
+  end: CurveId;
 }
 
 export interface IPenModeState {}
 
 export interface IBendModeState {}
+
+export interface IPathSettings {
+  strokeWidth: number;
+  strokeColor: string;
+  fillColor: string | null;
+}

@@ -54,8 +54,6 @@ class AppComponent extends React.Component<IAppProps> {
   constructor(props: IAppProps) {
     super(props);
 
-    this.updateArtboardSize();
-
     this.throttledResize = throttle(this.handleResizeWindow, 100);
     window.addEventListener("resize", this.throttledResize);
   }
@@ -64,6 +62,7 @@ class AppComponent extends React.Component<IAppProps> {
     const { artboard, setActiveInstrument } = this.props;
 
     artboard.init();
+    this.updateArtboardSize();
     setActiveInstrument(Instruments.Select);
   }
 

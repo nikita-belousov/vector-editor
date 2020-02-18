@@ -25,8 +25,10 @@ export class Background extends ArtboardObject {
   }
 
   public render(ctx: CanvasRenderingContext2D) {
+    const { coords, width, height } = this;
+
     ctx.fillStyle = this.color || "#FFF";
-    ctx.fillRect(0, 0, this.width, this.height);
+    ctx.fillRect(coords.x, coords.y, width, height);
   }
 
   public setWidth(width: number) {

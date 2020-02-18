@@ -5,7 +5,7 @@ import {
 } from "../instruments-panel/types";
 import { KeyboardEvents, KeyboardEventPayload } from "../keyboard/types";
 import { ArtboardObject } from "../object";
-import { ObjectEvents, ObjectEventsPayload } from "../object/types";
+import { ObjectsEvents, ObjectsEventsPayload } from "../object/types";
 import { RendererEvents } from "../renderer/types";
 import { AppActionType } from "../../ui/actions";
 import { ArtboardEvents } from "../artboard/types";
@@ -15,7 +15,7 @@ export type Events =
   | MouseEvents
   | InstrumentsEvents
   | KeyboardEvents
-  | ObjectEvents
+  | ObjectsEvents
   | RendererEvents
   | ArtboardEvents
   | BackgroundEvents;

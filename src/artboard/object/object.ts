@@ -5,16 +5,15 @@ import { ICoords } from "../types";
 
 export abstract class ArtboardObject {
   public type!: ObjectTypes;
+  public id!: string;
 
-  private id!: string;
   protected coords: ICoords = { x: 0, y: 0 };
 
   public abstract render(ctx: CanvasRenderingContext2D): void;
-
   public abstract getRect(): Rectangle;
 
   constructor(type: ObjectTypes) {
-    this.id = String(uniqueId("object__"));
+    this.id = uniqueId("object__");
     this.type = type;
   }
 

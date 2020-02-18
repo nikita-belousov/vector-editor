@@ -3,34 +3,33 @@ import { ShapePoint } from "./point";
 import * as styles from "../styles";
 import { IPathSettings } from "../types";
 
-interface ICurveRenderParams {
-  ctx: CanvasRenderingContext2D;
-  settings: IPathSettings;
-  index: number;
-  length: number;
-  drawing: boolean;
+interface ICurveConstructorParams {
+  point1: ShapePoint;
+  point2: ShapePoint;
+  control1: ShapePoint;
+  control2: ShapePoint;
 }
 
-export class Curve {
+export class ShapeCurve {
   public id!: string;
-  public previous: Curve | null = null;
-  public next: Curve | null = null;
-  public startControlMoved = false;
-  public startPoint!: ShapePoint;
-  public startControlPoint!: ShapePoint;
-  public endControlMoved = false;
-  public endPoint!: ShapePoint;
-  public endControlPoint!: ShapePoint;
+  public previous: ShapeCurve | null = null;
+  public next: ShapeCurve | null = null;
+  public point1!: ShapePoint;
+  public point2!: ShapePoint;
+  public control1!: ShapePoint;
+  public control2!: ShapePoint;
+  public control1Moved = false;
+  public control2Moved = false;
   public completed = false;
   public curveVisible = true;
 
-  constructor(startPoint: ShapePoint, previous: Curve | null = null) {
+  constructor(params: ICurveConstructorParams) {
     this.id = uniqueId("curve__");
     this.previous = previous;
-    this.startPoint = startPoint;
-    this.startControlPoint = startPoint.copy();
-    this.endPoint = startPoint.copy();
-    this.endControlPoint = startPoint.copy();
+    this.point1 = startPoint;
+    this.control1 = startPoint.copy();
+    this.point2 = startPoint.copy();
+    this.control2 = startPoint.copy();
   }
 
   public render(params: ICurveRenderParams) {
@@ -54,23 +53,23 @@ export class Curve {
   }
 
   public moveStartControlPoint(x: number, y: number) {
-    this.startControlPoint.x = x;
-    this.startControlPoint.y = y;
+    this.control1.x = x;
+    this.control1.y = y;
   }
 
   public moveEnvControlPoint(x: number, y: number) {
-    this.endControlPoint.x = x;
-    this.endControlPoint.y = y;
+    this.control2.x = x;
+    this.control2.y = y;
   }
 
   public moveEndPoint(x: number, y: number) {
-    this.endPoint.x = x;
-    this.endPoint.y = y;
+    this.point2.x = x;
+    this.point2.y = y;
   }
 
   public moveEndControlPoint(x: number, y: number) {
-    this.endControlPoint.x = x;
-    this.endControlPoint.y = y;
+    this.control2.x = x;
+    this.control2.y = y;
   }
 
   private renderStroke(
@@ -80,10 +79,10 @@ export class Curve {
   ) {
     const {
       curveVisible,
-      startPoint,
-      startControlPoint,
-      endPoint,
-      endControlPoint
+      point1: startPoint,
+      control1: startControlPoint,
+      point2: endPoint,
+      control2: endControlPoint
     } = this;
 
     if (!curveVisible || !this.completed) return;
@@ -107,10 +106,10 @@ export class Curve {
   private renderContour(ctx: CanvasRenderingContext2D) {
     const {
       curveVisible,
-      startPoint,
-      startControlPoint,
-      endPoint,
-      endControlPoint
+      point1: startPoint,
+      control1: startControlPoint,
+      point2: endPoint,
+      control2: endControlPoint
     } = this;
 
     if (!curveVisible) return;
@@ -141,12 +140,12 @@ export class Curve {
     if (index < length - 2) return;
 
     const {
-      startControlMoved: startModified,
-      endControlMoved: endModified,
-      startPoint,
-      startControlPoint,
-      endPoint,
-      endControlPoint
+      control1Moved: startModified,
+      control2Moved: endModified,
+      point1: startPoint,
+      control1: startControlPoint,
+      point2: endPoint,
+      control2: endControlPoint
     } = this;
 
     ctx.lineWidth = styles.controlLine.width;
@@ -167,7 +166,7 @@ export class Curve {
   }
 
   private renderPoints(ctx: CanvasRenderingContext2D) {
-    const { startPoint, endPoint } = this;
+    const { point1: startPoint, point2: endPoint } = this;
 
     ctx.lineWidth = styles.point.width;
     ctx.strokeStyle = styles.point.color;
@@ -185,10 +184,10 @@ export class Curve {
     if (index < length - 2) return;
 
     const {
-      startControlMoved: startModified,
-      endControlMoved: endModified,
-      startControlPoint,
-      endControlPoint
+      control1Moved: startModified,
+      control2Moved: endModified,
+      control1: startControlPoint,
+      control2: endControlPoint
     } = this;
 
     ctx.fillStyle = styles.controlPoint.fill;

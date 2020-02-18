@@ -1,64 +1,56 @@
 import { Entity } from "../entity";
 import { ArtboardObject } from "../object";
-import {
-  ObjectEvents,
-  ObjectEventsPayload,
-  ObjectId,
-  ObjectTypes
-} from "../object/types";
-import { ObjectsById, ObjectsIdsByType, ObjectsByType } from "./types";
+import { ObjectsEvents, ObjectTypes } from "../object/types";
+import { ObjectsByType } from "./types";
 import { RendererEvents } from "../renderer/types";
 
 export class ObjectsManager extends Entity {
   public displayName = "Object Manager";
   public emittingEventsTypes = [RendererEvents.RenderObjects];
 
-  private byId: ObjectsById = {};
-  private idsByType: ObjectsIdsByType = {};
+  private objects: ArtboardObject[] = [];
 
   constructor() {
     super();
     this.eventHandlers = {
-      [ObjectEvents.CreateObject]: this.registerNewObject
+      [ObjectsEvents.ObjectCreated]: this.registerNewObject.bind(this),
+      [ObjectsEvents.ObjectUpdated]: this.updateObject.bind(this)
     };
+  }
+
+  public getObjects(): Readonly<ArtboardObject[]> {
+    return this.objects;
   }
 
   public getObjectsByTypes(types: ObjectTypes[]): Readonly<ObjectsByType> {
     return types.reduce<ObjectsByType>((acc, type) => {
-      const ids = this.idsByType[type];
+      const objects = this.objects.filter(object => object.type === type);
 
-      if (!ids || ids.length === 0) {
+      if (objects.length === 0) {
         return acc;
       } else {
-        const objs = ids
-          .map(id => this.byId[id])
-          .filter(obj => obj !== undefined);
-
-        acc[type] = objs as ArtboardObject[];
+        acc.set(type, objects);
         return acc;
       }
-    }, {});
+    }, new Map());
   }
 
-  public registerNewObject({ type, object }: ObjectEventsPayload) {
-    const id = object.getId();
-    this.byId[id] = object;
-    this.idsByType[type].push(id);
+  private registerNewObject(object: ArtboardObject) {
+    this.objects.push(object);
   }
 
-  public updateObject(objectId: ObjectId, object: Object) {
-    const { byId } = this;
-    const updatedObject = byId[objectId];
-
-    const objectIdsToUpdate = Object.keys(byId).reduce<ObjectId[]>(
-      (acc, id) => {
-        const object = byId[id];
-        const overlaps = object.getRect().overlapsWith(updatedObject.getRect());
-        if (overlaps) acc.push(id);
+  private updateObject(updatedObject: ArtboardObject) {
+    const objectsToRerender = this.objects.reduce<ArtboardObject[]>(
+      (acc, object) => {
+        const udpatedObjectRect = updatedObject.getRect();
+        const overlaps = object.getRect().overlapsWith(udpatedObjectRect);
+        if (overlaps) acc.push(object);
 
         return acc;
       },
-      [objectId]
+      [updatedObject]
     );
+
+    this.emit(RendererEvents.RenderObjects, objectsToRerender);
   }
 }

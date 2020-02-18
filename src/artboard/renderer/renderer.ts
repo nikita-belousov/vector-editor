@@ -4,6 +4,8 @@ import { Background } from "../background";
 import { Cursor } from "../cursor/cursor";
 import { MouseSelection } from "../select/mouse-selection";
 import { ArtboardObject } from "../object";
+import { ArtboardEvents } from "../artboard/types";
+import { Rectangle } from "../rectangle";
 
 interface IRendererConstructorParams {
   screenWidth: number;
@@ -12,11 +14,10 @@ interface IRendererConstructorParams {
   cursorCtx: CanvasRenderingContext2D;
   selectionCtx: CanvasRenderingContext2D;
   artboardCtx: CanvasRenderingContext2D;
-
   background: Background;
   cursor: Cursor;
   mouseSelection: MouseSelection;
-  objects: ArtboardObject[];
+  objects: Readonly<ArtboardObject[]>;
 }
 
 export class Renderer extends Entity {
@@ -28,10 +29,10 @@ export class Renderer extends Entity {
   private cursorCtx!: CanvasRenderingContext2D;
   private selectionCtx!: CanvasRenderingContext2D;
   private artboardCtx!: CanvasRenderingContext2D;
-  private cursor!: Cursor;
   private background!: Background;
+  private cursor!: Cursor;
   private mouseSelection!: MouseSelection;
-  private objects!: ArtboardObject[];
+  private objects!: Readonly<ArtboardObject[]>;
 
   constructor({
     screenWidth,
@@ -59,6 +60,8 @@ export class Renderer extends Entity {
     this.objects = objects;
 
     this.eventHandlers = {
+      [ArtboardEvents.SetWidth]: w => (this.screenWidth = w),
+      [ArtboardEvents.SetHeight]: h => (this.screenHeight = h),
       [RendererEvents.RenderBackground]: this.renderBackground.bind(this),
       [RendererEvents.RenderObjects]: this.renderObjects.bind(this),
       [RendererEvents.RenderCursor]: this.renderCursor.bind(this),
@@ -93,6 +96,16 @@ export class Renderer extends Entity {
   }
 
   private renderObjects(objects: ArtboardObject[]) {
+    const rects = objects.map(object => object.getRect());
+    const dirtyRect = Rectangle.getSelectionRect(rects);
+
+    this.artboardCtx.clearRect(
+      0,
+      0,
+      dirtyRect.getWidth(),
+      dirtyRect.getHeight()
+    );
+
     objects.forEach(object => {
       object.render(this.artboardCtx);
     });

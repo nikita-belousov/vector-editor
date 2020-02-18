@@ -31,16 +31,6 @@ export class Rectangle {
     bottom = 0,
     right = 0
   }: RectangleConstructorParams = {}) {
-    if (left > right) {
-      throw new Error(
-        "invalid set of coords, left can't be greater then right"
-      );
-    } else if (top > bottom) {
-      throw new Error(
-        "invalid set of coords, top can't be greater then bottom"
-      );
-    }
-
     this.top = top;
     this.left = left;
     this.bottom = right;

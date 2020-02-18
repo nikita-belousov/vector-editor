@@ -23,7 +23,8 @@ export class Mouse extends Entity {
   public initState() {
     this.state = {
       coords: { mouseX: 0, mouseY: 0 },
-      button: null
+      button: null,
+      lastClick: null
     };
   }
 
@@ -41,18 +42,15 @@ export class Mouse extends Entity {
     this.canvas.removeEventListener("mouseleave", this.handleMouseLeave);
   }
 
-  public getMouseState(): Readonly<IMouseState> {
-    return this.state;
-  }
-
   private handleMouseDown = (e: MouseEvent) => {
-    this.state.coords = this.getRelativeCoords(e);
+    const coords = this.getRelativeCoords(e);
+    this.state.coords = coords;
+    this.state.lastClick = coords;
     this.updateMouseButton(e);
 
     const emitter = this.eventEmitters[MouseEvents.MouseDown];
-    const state = this.getMouseState();
     if (emitter) {
-      emitter(state);
+      emitter(this.state);
     }
   };
 
@@ -60,19 +58,19 @@ export class Mouse extends Entity {
     this.state.coords = this.getRelativeCoords(e);
 
     const emitter = this.eventEmitters[MouseEvents.MouseUp];
-    const state = this.getMouseState();
     if (emitter) {
-      emitter(state);
+      emitter(this.state);
     }
+
+    this.state.button = null;
   };
 
   private handleMouseMove = (e: MouseEvent) => {
     this.state.coords = this.getRelativeCoords(e);
 
     const emitter = this.eventEmitters[MouseEvents.MouseMove];
-    const state = this.getMouseState();
     if (emitter) {
-      emitter(state);
+      emitter(this.state);
     }
   };
 
@@ -80,9 +78,8 @@ export class Mouse extends Entity {
     this.state.coords = this.getRelativeCoords(e);
 
     const emitter = this.eventEmitters[MouseEvents.MouseLeave];
-    const state = this.getMouseState();
     if (emitter) {
-      emitter(state);
+      emitter(this.state);
     }
   };
 

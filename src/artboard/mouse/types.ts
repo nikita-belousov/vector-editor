@@ -19,6 +19,7 @@ export interface IMouseCoords {
 export interface IMouseState {
   coords: IMouseCoords;
   button: MouseButtons | null;
+  lastClick: IMouseCoords | null;
 }
 
 export type MouseEventPayload = Readonly<IMouseState>;

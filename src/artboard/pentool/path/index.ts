@@ -1,4 +1,7 @@
 export { Path } from "./path";
 export { Curve } from "./curve";
-export { Point } from "./point";
-export { ControlPoint } from "./control-point";
+export { ShapePoint as Point } from "./point";
+
+export { ShapePath } from "./shape-path";
+export { ShapeCurve } from "./shape-curve";
+export { ShapePoint } from "./shape-point";

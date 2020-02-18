@@ -34,6 +34,13 @@ export type ArtboardActionType =
   | typeof SET_ARTBOARD_HEIGHT
   | typeof SET_BACKGROUND_COLOR;
 
+export type ArtboardActionCreator =
+  | typeof EnterArtboard
+  | typeof LeaveArtboard
+  | typeof SetArtboardtWidth
+  | typeof SetArtboardHeight
+  | typeof SetBackgroundColor;
+
 export type ArtboardAction =
   | EnterArtboard
   | LeaveArtboard

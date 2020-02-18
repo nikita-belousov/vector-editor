@@ -9,4 +9,6 @@ export class SetActiveInstrument {
 
 export type InstrumentsPanelActionType = typeof SET_ACTIVE_INSTRUMENT;
 
+export type InstrumentsPanelActionCreator = typeof SetActiveInstrument;
+
 export type InstrumentsPanelAction = SetActiveInstrument;

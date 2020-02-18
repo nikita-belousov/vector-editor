@@ -11,7 +11,7 @@ import pentoolCursor from "../../assets/images/cursors/pentool.png";
 export class CursorManager extends Entity {
   static cursorImagesPaths: Map<Instruments, string> = new Map([
     [Instruments.Select, selectCursor],
-    [Instruments.PenTool, pentoolCursor]
+    [Instruments.Pen, pentoolCursor]
   ]);
 
   public displayName = "Cursor";
@@ -76,9 +76,10 @@ export class CursorManager extends Entity {
   private loadCursorImage(instrument: Instruments, onLoad: () => void) {
     const path = CursorManager.cursorImagesPaths.get(instrument);
     if (path === undefined) {
-      throw new Error(
-        `cursor image path for instrument ${instrument} is not defined`
-      );
+      return;
+      // throw new Error(
+      //   `cursor image path for instrument ${instrument} is not defined`
+      // );
     }
 
     const self = this;

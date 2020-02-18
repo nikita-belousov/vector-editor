@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import { colors } from "../../styles/variables";
+import { sizes, colors } from "../../styles/variables";
 
 interface IButtonProps {
   title?: string;
@@ -11,8 +11,8 @@ interface IButtonProps {
 const ButtonStyled = styled.button`
   display: flex;
   align-items: center;
-  width: 100px;
-  padding: 6px 8px;
+  min-width: 90px;
+  height: ${sizes.inputHeight}px;
   background: ${colors.white};
   border: 1px solid ${colors.lightGrey};
   border-radius: 3px;

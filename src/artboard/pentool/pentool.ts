@@ -1,23 +1,35 @@
 import { Instrument } from "../instrument";
-import { PenToolModes, IPenModeState, IBendModeState } from "./types";
-import { MouseEvents, MouseEventPayload } from "../mouse/types";
+import { MouseEvents, MouseEventPayload, MouseButtons } from "../mouse/types";
+import {
+  KeyboardEvents,
+  Keys,
+  IKeyboardState,
+  KeyboardEventPayload
+} from "../keyboard/types";
 import { Instruments } from "../instruments-panel/types";
 import { ObjectTypes } from "../object/types";
 import { ArtboardObject } from "../object";
+import { PenToolModes, PathId } from "./types";
+import { Path } from "./path";
+import { RendererEvents } from "../renderer/types";
+import { ObjectsEvents } from "../object/types";
 
 export class PenTool extends Instrument {
   static modes = [PenToolModes.Pen, PenToolModes.Bend];
 
   public displayName = "Pen Tool";
+  public emittingEventsTypes = [
+    ObjectsEvents.ObjectCreated,
+    ObjectsEvents.ObjectUpdated
+  ];
   public objectTypes!: ObjectTypes[];
+
   private mode!: PenToolModes;
-  private stateByMode!: {
-    [PenToolModes.Pen]: IPenModeState;
-    [PenToolModes.Bend]: IBendModeState;
-  };
+  private activePath: Path | null = null;
+  private pathsById: Map<PathId, Path> = new Map();
 
   constructor() {
-    super(Instruments.PenTool);
+    super(Instruments.Pen);
 
     this.objectTypes = [ObjectTypes.Path];
 
@@ -25,7 +37,10 @@ export class PenTool extends Instrument {
       ...this.eventHandlers,
       [MouseEvents.MouseDown]: this.handleMouseDown.bind(this),
       [MouseEvents.MouseUp]: this.handleMouseUp.bind(this),
-      [MouseEvents.MouseMove]: this.handleMouseMove.bind(this)
+      [MouseEvents.MouseMove]: this.handleMouseMove.bind(this),
+      [KeyboardEvents.KeyDown]: this.handleKeyDown.bind(this),
+      [ObjectsEvents.SetStrokeColor]: this.handleSetStrokeColor.bind(this),
+      [ObjectsEvents.SetStrokeWidth]: this.handleSetStrokeWidth.bind(this)
     };
   }
 
@@ -35,59 +50,77 @@ export class PenTool extends Instrument {
   }
 
   protected handlePick() {
-    this.setMode(PenToolModes.Pen);
+    this.mode = PenToolModes.Pen;
   }
 
   protected handleMouseDown(mouseState: MouseEventPayload) {
     if (!this.active) return;
 
-    switch (this.mode) {
-      case PenToolModes.Pen:
-        this.handleMouseDownPenMode(mouseState);
-        break;
-      case PenToolModes.Bend:
-        this.handleMouseDownBendMode(mouseState);
-        break;
-      default:
-        throw new Error(
-          `unrecognized pen tool mode '${
-            this.mode
-          }' (available modes: ${PenTool.modes.join(", ")})`
-        );
+    const {
+      button,
+      coords: { mouseX, mouseY }
+    } = mouseState;
+
+    if (button !== MouseButtons.Left) return;
+
+    if (this.mode === PenToolModes.Pen && this.activePath === null) {
+      this.activePath = this.createNewPath(mouseX, mouseY);
+    } else if (this.activePath !== null) {
+      this.activePath.handleMouseDown(mouseState);
     }
   }
 
   protected handleMouseUp(mouseState: MouseEventPayload) {
     if (!this.active) return;
+
+    if (this.activePath !== null) {
+      this.activePath.handleMouseUp(mouseState);
+    }
   }
 
   protected handleMouseMove(mouseState: MouseEventPayload) {
     if (!this.active) return;
-  }
 
-  private initModesState() {
-    this.stateByMode = {
-      [PenToolModes.Pen]: {},
-      [PenToolModes.Bend]: {}
-    };
-  }
-
-  private setMode(mode: PenToolModes) {
-    if (!PenTool.modes.includes(mode)) {
-      throw new Error(
-        `unrecognized pen tool mode '${mode}' (available modes: ${PenTool.modes.join(
-          ", "
-        )})`
-      );
+    if (this.activePath !== null) {
+      this.activePath.handleMouseMove(mouseState);
     }
-    this.mode = mode;
   }
 
-  private handleMouseDownPenMode(mouseState: MouseEventPayload) {
-    const penModeState = this.stateByMode[PenToolModes.Pen];
+  private handleKeyDown({ key }: KeyboardEventPayload) {
+    if (key === Keys.Esc && this.activePath !== null) {
+      this.activePath.deleteEndCurve();
+      const active = this.activePath;
+      this.activePath = null;
+      this.emit(ObjectsEvents.ObjectUpdated, active);
+    }
   }
 
-  private handleMouseDownBendMode(mouseState: MouseEventPayload) {
-    const bendModeState = this.stateByMode[PenToolModes.Bend];
+  private handleSetStrokeColor(color: string) {
+    if (this.activePath) {
+      this.activePath.setStrokeColor(color);
+      this.emit(ObjectsEvents.ObjectUpdated, this.activePath);
+    }
+  }
+
+  private handleSetStrokeWidth(width: number) {
+    if (this.activePath) {
+      this.activePath.setStrokeWidth(width);
+      this.emit(ObjectsEvents.ObjectUpdated, this.activePath);
+    }
+  }
+
+  private createNewPath(x: number, y: number): Path {
+    const path = new Path({
+      startCoords: { x, y },
+      getActivePath: () => this.activePath,
+      getCurrentMode: () => this.mode,
+      update: (object: ArtboardObject) =>
+        this.emit(ObjectsEvents.ObjectUpdated, object)
+    });
+
+    this.pathsById.set(path.id, path);
+    this.emit(ObjectsEvents.ObjectCreated, path);
+
+    return path;
   }
 }

@@ -7,15 +7,17 @@ import { IPathSettings } from "../types";
 import { ICoords } from "../../types";
 import { PenToolModes } from "../types";
 import { IMouseState, MouseButtons } from "../../mouse/types";
+import { ArtboardModes } from "../../artboard/types";
 
 interface IPathParams {
-  startCoords: ICoords;
-  getActivePath: () => Path | null;
-  getCurrentMode: () => PenToolModes;
+  coords: ICoords;
+  curves?: Curve[];
+  getCurrentMode: () => ArtboardModes;
   update: (object: ArtboardObject) => void;
 }
 
-export class Path extends ArtboardObject {
+export class ShapePath extends ArtboardObject {
+  private mode: ArtboardModes = ArtboardModes.Normal;
   private curves: Curve[] = [];
   private startCurve: Curve;
   private endCurve!: Curve;
@@ -23,23 +25,22 @@ export class Path extends ArtboardObject {
 
   private settings: IPathSettings = {
     strokeWidth: 0,
-    strokeColor: "#000"
+    strokeColor: "#000",
+    fillColor: null
   };
 
-  private getActivePath: () => Path | null;
-  private getCurrentMode!: () => PenToolModes;
+  private getCurrentMode!: () => ArtboardModes;
   private update!: (object: ArtboardObject) => void;
 
   constructor(params: IPathParams) {
     super(ObjectTypes.Path);
 
-    const { x, y } = params.startCoords;
+    const { x, y } = params.coords;
     const startPoint = new ShapePoint(x, y);
     const curve = this.addNewCurve(startPoint, null);
 
     this.coords = { x, y };
     this.startCurve = curve;
-    this.getActivePath = params.getActivePath;
     this.getCurrentMode = params.getCurrentMode;
     this.update = params.update;
 
@@ -138,6 +139,10 @@ export class Path extends ArtboardObject {
       }
     } else if (mode === PenToolModes.Bend) {
     }
+  }
+
+  public setMode(mode: ArtboardModes) {
+    this.mode = mode;
   }
 
   public deleteEndCurve() {

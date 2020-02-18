@@ -1,4 +1,4 @@
- import React, { Component } from "react";
+import React, { Component } from "react";
 import mapValues from "lodash/mapValues";
 import uniqueId from "lodash/uniqueId";
 import {
@@ -88,7 +88,7 @@ export default class App extends Component<{}, IAppState> {
     window.document.onkeypress = this.handleKeyPress;
     window.document.onkeydown = this.handleKeyDown;
     window.document.onkeyup = this.handleKeyUp;
-    
+
     this.canvas.onmousedown = this.handleMouseDown;
     this.canvas.onmousemove = this.hanleMouseMove;
     this.canvas.onmouseup = this.handleMouseUp;

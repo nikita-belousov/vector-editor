@@ -2,7 +2,9 @@ export const sizes = {
   topBarHeight: 40,
   sidebarWidth: 240,
   colorPickerWidth: 220,
-  sidebarSectionPadding: [18, 16]
+  sidebarSectionPadding: [18, 16],
+  inputHeight: 28,
+  dropdownWidth: 200
 };
 
 export const colors = {

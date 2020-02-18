@@ -57,7 +57,7 @@ export class Artboard {
     const pentool = new PenTool();
 
     instruments.set(Instruments.Select, select);
-    instruments.set(Instruments.PenTool, pentool);
+    instruments.set(Instruments.Pen, pentool);
 
     this.renderer = new Renderer({
       screenWidth: this.artboardCanvas.width,
@@ -69,14 +69,7 @@ export class Artboard {
       background: this.backgroundManager.getBackground(),
       cursor: this.cursorManager.getCursor(),
       mouseSelection: select.getMouseSelection(),
-      objects: Object.keys(instruments).reduce<ArtboardObject[]>(
-        (acc, type) => {
-          const instrument = instruments.get(type as Instruments);
-          acc.concat((instrument as Instrument).getObjects());
-          return acc;
-        },
-        []
-      )
+      objects: this.objectsManager.getObjects()
     });
 
     this.entities = [
@@ -118,7 +111,7 @@ export class Artboard {
     const artboardCtx = artboardCanvas.getContext(
       "2d"
     ) as CanvasRenderingContext2D;
-    const selectionCtx = artboardCanvas.getContext(
+    const selectionCtx = selectionCanvas.getContext(
       "2d"
     ) as CanvasRenderingContext2D;
     const cursorCtx = cursorCanvas.getContext("2d") as CanvasRenderingContext2D;
