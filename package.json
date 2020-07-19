@@ -14,7 +14,7 @@
     "@types/redux-devtools": "3.0.47",
     "@types/styled-components": "4.4.3",
     "immer": "5.3.5",
-    "lodash": "4.17.15",
+    "lodash": "4.17.19",
     "normalize.css": "8.0.1",
     "react": "^16.12.0",
     "react-color": "2.18.0",
